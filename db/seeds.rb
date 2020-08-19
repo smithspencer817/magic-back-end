@@ -5,6 +5,10 @@
 #
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
+require 'rest-client'
+
+results = RestClient.get 'https://api.magicthegathering.io/v1/cards'
+cards = JSON.parse(results)["cards"]
 
 User.destroy_all
 Card.destroy_all
@@ -18,13 +22,13 @@ UserCard.destroy_all
     )
 end
 
-30.times do 
+cards.each do |card|
     Card.create(
-        name: Faker::Name.name,
-        mana_cost: ["{G}{G}{U}", "{A}{S}{S}", "{G}{D}{I}"].sample,
-        img_url: ["https://www.obilisk.co/wp-content/uploads/2017/10/DFE8EE86-45EC-497A-9FDF-CA5CF05337FB-888x500.jpeg", "https://images4.alphacoders.com/207/thumb-350-207154.jpg"].sample,
-        spell_type: ["instance", "creature", "sorcery", "planeswalker", "land"].sample,
-        description: Faker::String.random,
+        name: card["name"],
+        mana_cost: card["manaCost"],
+        img_url: card["imageUrl"],
+        spell_type: card["type"],
+        description: card["text"]
     )
 end
 
